@@ -1,7 +1,7 @@
 from tkinter import *
 from tkinter import messagebox
-from mydb import Database
-from myapi import API
+from Project.Tkinter.mydb import Database
+from Project.Tkinter.myapi import API
 
 class NlpApp:
     def __init__(self):
