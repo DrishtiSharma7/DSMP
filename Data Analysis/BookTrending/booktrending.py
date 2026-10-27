@@ -1,16 +1,16 @@
-
+import os
+import time
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.by import By
-from selenium.webdriver.support.ui import WebDriverWait              # NEW
-from selenium.webdriver.support import expected_conditions as EC     # NEW
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import ( NoSuchElementException, StaleElementReferenceException, ElementClickInterceptedException, TimeoutException,)
 from urllib.parse import urlparse, parse_qs, urlencode, urlunparse
-import time
-
 
 s = Service("/Users/drishtisharma/Downloads/DSMP/Data Analysis/chromedriver-mac-arm64/chromedriver")
+os.makedirs("html_pages", exist_ok=True)
 
 chrome_options = Options()
 chrome_options.add_experimental_option("detach", True)
@@ -34,6 +34,9 @@ NEXT_LOCATORS = [
     (By.XPATH, NEXT_XPATH),
 ]
 
+# NEW: combined output file, saved next to this script
+OUTPUT_FILE = os.path.join(os.path.dirname(os.path.abspath(__file__)), "books_all_pages.html")
+
 
 def safe_get(url):
     """Open a URL, and if loading is slow, stop loading and carry on."""
@@ -44,7 +47,7 @@ def safe_get(url):
         driver.execute_script("window.stop();")
 
 
-# ---------------- NEW: preload mask handling ----------------
+# ---------------- preload mask handling ----------------
 def wait_for_mask_gone(timeout=30):
     """Wait until the white full-screen 'eb-preload-mask' overlay disappears."""
     try:
@@ -150,30 +153,40 @@ def print_pagination_debug():
 safe_get("https://atlanticbooks.com/collections")
 time.sleep(3)
 
-# CHANGED: your original clicks, now through safe_click (same XPaths)
+# your original clicks, now through safe_click (same XPaths)
 safe_click('//*[@id="site-header-nav"]/nav/ul/li[9]/a')
 time.sleep(3)
 
 safe_click('//*[@id="shopify-section-template--17889691795607__main"]/div[1]/div[3]/nav[1]/div[3]/div/div/button[2]')
 time.sleep(3)
 
+# NEW: start with a fresh, empty file on every run
+with open(OUTPUT_FILE, mode='w', encoding='utf-8') as f:
+    f.write("")
+print("Saving to:", OUTPUT_FILE)
+
 page = 1
 while True:
-    wait_for_mask_gone()   # NEW: make sure page is visible before scrolling
+    wait_for_mask_gone()   # make sure page is visible before scrolling
     print(f"Scrolling page {page}...")
     scroll_to_bottom()
 
     current_links = get_product_links()
     print(f"Page {page}: {len(current_links)} product links | {driver.current_url}")
 
-    # ---- scrape your data for this page here ----
+    # Append this page to the single combined file
+    with open(OUTPUT_FILE, mode='a', encoding='utf-8') as f:
+        f.write(f"\n<!-- ===== PAGE {page} | {driver.current_url} ===== -->\n")
+        f.write(driver.page_source)
+        f.write("\n")
+    print(f"Appended page {page} to {OUTPUT_FILE}")
 
     btn = find_next_with_retry()
     print("Next button found:", btn.get_attribute("outerHTML") if btn else None)
 
     if btn is not None:
         try:
-            wait_for_mask_gone()   # NEW
+            wait_for_mask_gone()
             driver.execute_script("arguments[0].scrollIntoView({block: 'center'});", btn)
             time.sleep(1)
             btn.click()
@@ -194,4 +207,4 @@ while True:
     page += 1
     time.sleep(3)  # wait for the next page to load
 
-driver.quit()   # commented out so the browser stays open and you can inspect it
+driver.quit()   # browser closes when scraping is finished (data is already saved in the file)
