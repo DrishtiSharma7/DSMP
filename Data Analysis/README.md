@@ -15,7 +15,7 @@ This project covers the full workflow: scraping book listings, cleaning the data
 
 > **Note:** The raw dataset is **not redistributed** in this repository. Run `scraper.py` to collect the data yourself, and please respect the website's Terms of Service and `robots.txt`.
 
-## 🧾 Dataset Columns
+## Dataset Columns
 
 | Column | Description |
 |---|---|
@@ -32,29 +32,21 @@ This project covers the full workflow: scraping book listings, cleaning the data
 | `subject` | Book subject / category |
 | `bisac` | BISAC subject code |
 
-## 🎯 Objectives
+## Objectives
 
 1. Clean and prepare the scraped data for analysis
 2. Understand the distribution of prices, discounts and ratings
 3. Compare pricing across formats, publishers and subjects
 4. Check whether price or discount is related to ratings
 
-## 🔧 Approach
+## Approach
 
 1. **Data collection:** scraping book listings
 2. **Data cleaning:** handling missing values, duplicates, wrong data types, price formatting
 3. **Exploratory data analysis:** summary statistics and visualisations
 4. **Insights:** key findings and conclusions
 
-## 📊 Key Findings
-
-> Replace with your actual results.
-
-- Finding 1: [e.g., Average discount is X% across all books]
-- Finding 2: [e.g., Hardcover books are priced higher than paperbacks on average]
-- Finding 3: [e.g., Subject Y has the highest average rating]
-
-## 🛠️ Tools & Libraries
+## Tools & Libraries
 
 - Python
 - Pandas, NumPy
@@ -62,7 +54,7 @@ This project covers the full workflow: scraping book listings, cleaning the data
 - Requests, BeautifulSoup
 - Jupyter Notebook
 
-## 📁 Repository Structure
+## Repository Structure
 
 ```
 books-price-analysis/
@@ -73,7 +65,7 @@ books-price-analysis/
 └── README.md
 ```
 
-## ▶️ How to Run
+## How to Run
 
 ```bash
 # 1. Clone the repository
@@ -90,14 +82,8 @@ python scraper.py
 jupyter notebook analysis.ipynb
 ```
 
-## ⚠️ Disclaimer
+## Disclaimer
 
 This project is for educational purposes. All book information belongs to its respective owners and the Atlantic Books website. No ownership of the source data is claimed.
-
-## 👤 Author
-
-**[Your Name]**
-- GitHub: [@your-username](https://github.com/your-username)
-- LinkedIn: [add link]
 
 ⭐ If you found this project useful, consider giving it a star!
