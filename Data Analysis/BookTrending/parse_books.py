@@ -1,3 +1,9 @@
+"""
+Atlantic Books HTML Parser
+Parses the multi-page scraped HTML file (books_all_pages.html) and extracts
+structured book card data into books.csv.
+"""
+
 import os
 import re
 import pandas as pd

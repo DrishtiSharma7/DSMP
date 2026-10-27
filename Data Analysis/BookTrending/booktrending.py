@@ -1,3 +1,9 @@
+"""
+Atlantic Books Scraper
+Automates browser navigation through Atlantic Books bestsellers collection,
+handling infinite scroll / pagination, and saving raw HTML pages.
+"""
+
 import os
 import time
 from selenium import webdriver
@@ -9,7 +15,8 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import ( NoSuchElementException, StaleElementReferenceException, ElementClickInterceptedException, TimeoutException,)
 from urllib.parse import urlparse, parse_qs, urlencode, urlunparse
 
-s = Service("/Users/drishtisharma/Downloads/DSMP/Data Analysis/chromedriver-mac-arm64/chromedriver")
+DRIVER_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "chromedriver-mac-arm64", "chromedriver")
+s = Service(DRIVER_PATH if os.path.exists(DRIVER_PATH) else "/Users/drishtisharma/Downloads/DSMP/Data Analysis/chromedriver-mac-arm64/chromedriver")
 os.makedirs("html_pages", exist_ok=True)
 
 chrome_options = Options()
@@ -17,15 +24,13 @@ chrome_options.add_experimental_option("detach", True)
 chrome_options.add_experimental_option("excludeSwitches", ["enable-logging"])
 chrome_options.add_argument("--ignore-certificate-errors")
 chrome_options.add_argument("--start-maximized")
-chrome_options.page_load_strategy = "eager"   # don't wait for every image/script/tracker to finish
+chrome_options.page_load_strategy = "eager"   # fast navigation without blocking on media
 
 driver = webdriver.Chrome(service=s, options=chrome_options)
-driver.set_page_load_timeout(60)              # fail after 60s instead of hanging for 120s
+driver.set_page_load_timeout(60)
 
-# Your original XPath (kept)
+# Next button locators (semantic selectors preferred, position xpath as fallback)
 NEXT_XPATH = '//*[@id="shopify-section-template--17889691795607__main"]/div[1]/div[3]/nav[2]/ul/li[8]/a'
-
-# Text/attribute based locators first, your position-based XPath is the last fallback
 NEXT_LOCATORS = [
     (By.CSS_SELECTOR, 'a[rel="next"]'),
     (By.CSS_SELECTOR, 'a[aria-label*="Next" i]'),
@@ -34,7 +39,6 @@ NEXT_LOCATORS = [
     (By.XPATH, NEXT_XPATH),
 ]
 
-# NEW: combined output file, saved next to this script
 OUTPUT_FILE = os.path.join(os.path.dirname(os.path.abspath(__file__)), "books_all_pages.html")
 
 
@@ -153,14 +157,15 @@ def print_pagination_debug():
 safe_get("https://atlanticbooks.com/collections")
 time.sleep(3)
 
-# your original clicks, now through safe_click (same XPaths)
+# Navigate to bestsellers collection
 safe_click('//*[@id="site-header-nav"]/nav/ul/li[9]/a')
 time.sleep(3)
 
+# Filter / sorting options
 safe_click('//*[@id="shopify-section-template--17889691795607__main"]/div[1]/div[3]/nav[1]/div[3]/div/div/button[2]')
 time.sleep(3)
 
-# NEW: start with a fresh, empty file on every run
+# Initialize output file
 with open(OUTPUT_FILE, mode='w', encoding='utf-8') as f:
     f.write("")
 print("Saving to:", OUTPUT_FILE)
